@@ -1,0 +1,57 @@
+[
+  {
+    "id": "1",
+    "title": "HOPSA Marketplace",
+    "slug": "hopsa-marketplace",
+    "description": "Ghana-focused e-commerce marketplace connecting school alumni and students with a community hub for mentorship and networking.",
+    "tags": [
+      "Marketplace",
+      "E-Commerce",
+      "Community"
+    ],
+    "thumbnailUrl": "/uploads/images/1793042791337-Screenshot2026-10-25191744.png",
+    "published": true,
+    "order": 1,
+    "liveUrl": "https://ghssmarketplace.com/"
+  },
+  {
+    "title": "GoodCane",
+    "slug": "goodcane",
+    "description": "Demonstrates how product discovery can turn into more consistent and predictable demand through the use of QR codes and private links",
+    "tags": [],
+    "thumbnailUrl": "/uploads/images/1793049434442-Screenshot2026-10-26211653.png",
+    "liveUrl": "https://goodcane.vercel.app/",
+    "repoUrl": "https://github.com/RTapz/goodcane",
+    "published": true,
+    "order": 2,
+    "id": "90ccb132-a39e-4f0c-a75c-f8adff091474"
+  },
+  {
+    "id": "2",
+    "title": "Phashion Sense",
+    "slug": "phashion-sense",
+    "description": "Hackathon-winning fashion MVP with body-type onboarding, size recommendations, cart/wishlist, and WhatsApp checkout.",
+    "tags": [
+      "React",
+      "Hackathon",
+      "Mobile-first"
+    ],
+    "thumbnailUrl": "/placeholder-project.svg",
+    "published": true,
+    "order": 3
+  },
+  {
+    "id": "3",
+    "title": "AfroVoice",
+    "slug": "afrovoice",
+    "description": "AI-powered voice-controlled finance assistant MVP to help businesses manage operations through natural interaction.",
+    "tags": [
+      "AI",
+      "Voice",
+      "Fintech"
+    ],
+    "thumbnailUrl": "/placeholder-project.svg",
+    "published": true,
+    "order": 4
+  }
+]

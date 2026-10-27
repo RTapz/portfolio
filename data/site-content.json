@@ -1,0 +1,234 @@
+{
+  "siteName": "Ryan.",
+  "profile": {
+    "name": "Ryan",
+    "fullName": "Ryan Ofori-Koree",
+    "title": "Computer Science Student & Software Developer",
+    "email": "ryanoforikoree@gmail.com",
+    "heroBio": "I am Ryan Ofori-Koree, a Computer Science student at Ashesi University building full-stack products across web and mobile, using AI-assisted tooling. From escrow platforms and academic systems to hackathon-winning MVPs, I focus on shipping useful software with clear architecture and polished user experiences.",
+    "aboutBio": "I am studying BSc Computer Science at Ashesi University with hands-on experience as a Platforms Developer Officer Intern at Npontu Technologies and a Software Development Intern at SnooCODE. I work with Python, Java, JavaScript, PHP (Laravel), SQL, and modern AI-assisted tooling. Recent achievements include 1st place at the Coded Esports x Miro Fashion Hackathon, 2nd place at the Obsessive Innovations Hackathon and completion of inro to CS50 Python from Harvard (edX). I am looking for opportunities to build impactful products in areas such as fintech, marketplaces, and developer tools.",
+    "cvPath": "/uploads/cv/1793063563784-RyanOfori-KoreeCV1page.pdf",
+    "portraitSrc": "/ryan-portrait.png",
+    "socials": [
+      {
+        "label": "LinkedIn",
+        "href": "https://www.linkedin.com/in/ryan-ofori-koree/",
+        "iconSlug": "linkedin"
+      },
+      {
+        "label": "GitHub",
+        "href": "https://github.com/RTapz",
+        "iconSlug": "github"
+      },
+      {
+        "label": "Instagram",
+        "href": "https://www.instagram.com/r.tapzz/",
+        "iconSlug": "instagram"
+      }
+    ]
+  },
+  "aboutStats": [
+    {
+      "label": "GPA (Ashesi)",
+      "value": "3.71"
+    },
+    {
+      "label": "Projects shipped",
+      "value": "5+"
+    },
+    {
+      "label": "Hackathon wins",
+      "value": "2"
+    }
+  ],
+  "servicesIntro": "What I can help you build.",
+  "services": [
+    {
+      "title": "Full-Stack Web Apps",
+      "icon": "fullstack",
+      "description": "Marketplaces, booking flows, and dashboards with Laravel, JavaScript, and PostgreSQL."
+    },
+    {
+      "title": "Fintech & Escrow Systems",
+      "icon": "fintech",
+      "description": "Payment lifecycles, mobile money integration, trust scoring, and secure transaction design."
+    },
+    {
+      "title": "AI & Automation",
+      "icon": "ai",
+      "description": "RAG pipelines, proposal tooling, and voice-driven workflows that save teams time."
+    },
+    {
+      "title": "Product Documentation",
+      "icon": "documentation",
+      "description": "Requirements, phased architecture, and implementation plans for multi-tenant platforms."
+    }
+  ],
+  "testimonials": [
+    {
+      "quote": "One of the best people I have ever worked with.",
+      "name": "C. Yeboah",
+      "role": "Internship supervisor"
+    }
+  ],
+  "skills": [
+    {
+      "id": "python",
+      "label": "Python",
+      "key": "p",
+      "color": "#3776AB",
+      "level": "Intermediate",
+      "description": "Programming — CV",
+      "iconSlug": "python",
+      "grid": {
+        "row": 0,
+        "col": 0
+      }
+    },
+    {
+      "id": "java",
+      "label": "Java",
+      "key": "i",
+      "color": "#ED8B00",
+      "level": "Intermediate",
+      "description": "Programming — CV",
+      "iconSlug": "openjdk",
+      "grid": {
+        "row": 0,
+        "col": 1
+      }
+    },
+    {
+      "id": "sql",
+      "label": "SQL",
+      "key": "s",
+      "color": "#336791",
+      "level": "Beginner",
+      "description": "Programming — CV",
+      "shortLabel": "SQL",
+      "grid": {
+        "row": 0,
+        "col": 2
+      }
+    },
+    {
+      "id": "javascript",
+      "label": "JavaScript",
+      "key": "j",
+      "color": "#F7DF1E",
+      "level": "Beginner",
+      "description": "Programming — CV",
+      "iconSlug": "javascript",
+      "shortLabel": "JS",
+      "grid": {
+        "row": 0,
+        "col": 3
+      }
+    },
+    {
+      "id": "sqlite",
+      "label": "SQLite",
+      "key": "q",
+      "color": "#003B57",
+      "level": "Intermediate",
+      "description": "Frameworks & data — CV",
+      "iconSlug": "sqlite",
+      "grid": {
+        "row": 0,
+        "col": 4
+      }
+    },
+    {
+      "id": "laravel",
+      "label": "Laravel",
+      "key": "l",
+      "color": "#FF2D20",
+      "level": "Beginner",
+      "description": "Frameworks & data — CV",
+      "iconSlug": "laravel",
+      "grid": {
+        "row": 1,
+        "col": 0
+      }
+    },
+    {
+      "id": "postgresql",
+      "label": "PostgreSQL",
+      "key": "g",
+      "color": "#4169E1",
+      "level": "Beginner",
+      "description": "Frameworks & data — CV",
+      "iconSlug": "postgresql",
+      "grid": {
+        "row": 1,
+        "col": 1
+      }
+    },
+    {
+      "id": "git",
+      "label": "Git & GitHub",
+      "key": "t",
+      "color": "#F05032",
+      "level": "Beginner",
+      "description": "Tools — version control — CV",
+      "iconSlug": "git",
+      "grid": {
+        "row": 1,
+        "col": 2
+      }
+    },
+    {
+      "id": "vscode",
+      "label": "VS Code",
+      "key": "v",
+      "color": "#007ACC",
+      "level": "Intermediate",
+      "description": "Tools — CV",
+      "iconSlug": "visualstudiocode",
+      "grid": {
+        "row": 1,
+        "col": 3
+      }
+    },
+    {
+      "id": "cursor",
+      "label": "Cursor",
+      "key": "u",
+      "color": "#1e40af",
+      "level": "Intermediate",
+      "description": "Tools — CV",
+      "iconSlug": "cursor",
+      "grid": {
+        "row": 1,
+        "col": 4
+      }
+    },
+    {
+      "id": "cli",
+      "label": "Command line",
+      "key": "c",
+      "color": "#27272a",
+      "level": "Intermediate",
+      "description": "Tools — basic CLI — CV",
+      "iconSlug": "gnubash",
+      "grid": {
+        "row": 2,
+        "col": 0
+      }
+    },
+    {
+      "id": "french",
+      "label": "French",
+      "key": "f",
+      "color": "#002395",
+      "level": "Intermediate",
+      "description": "Working proficiency in reading and writing — CV",
+      "shortLabel": "FR",
+      "grid": {
+        "row": 2,
+        "col": 1
+      }
+    }
+  ],
+  "contactIntro": "Have a project in mind or want to say hi? Send a message and I will get back to you."
+}
