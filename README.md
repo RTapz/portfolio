@@ -19,6 +19,20 @@ Open [http://localhost:3000](http://localhost:3000).
 | `ADMIN_PASSWORD` | Password for `/admin` (default dev: `admin` if unset) |
 | `SESSION_SECRET` | Cookie encryption secret (32+ characters) |
 | `BLOB_READ_WRITE_TOKEN` | Optional: store projects in Vercel Blob on deploy |
+| `RESEND_API_KEY` | **Required for contact form:** API key from [Resend](https://resend.com) |
+| `CONTACT_TO_EMAIL` | Where contact submissions are delivered (default: `ryanoforikoree@gmail.com`) |
+| `RESEND_FROM` | Sender address (must be allowed in Resend; see below) |
+
+### Contact form email
+
+The public contact form sends mail through **Resend**. Without `RESEND_API_KEY`, submissions return an error.
+
+1. Create a free [Resend](https://resend.com) account and add an API key.
+2. Set `RESEND_API_KEY` (and optionally `CONTACT_TO_EMAIL`) in `.env.local` and on Vercel.
+3. **Testing:** Resend’s `onboarding@resend.dev` sender can only deliver to the email address on your Resend account until you verify a domain.
+4. **Production:** Verify your domain in Resend, then set `RESEND_FROM` (e.g. `Ryan Portfolio <hello@yourdomain.com>`).
+
+Reply-to is set to the visitor’s email so you can reply from Gmail directly.
 
 ## Admin (private)
 

@@ -29,13 +29,20 @@ export function Contact({ profile, intro }: ContactProps) {
           message: data.get("message"),
         }),
       });
-      if (!res.ok) throw new Error("Failed");
+      const json = (await res.json()) as { error?: string };
+      if (!res.ok) {
+        throw new Error(json.error ?? "Failed to send");
+      }
       setStatus("success");
-      setMessage("Thanks! Your message was received.");
+      setMessage("Thanks! Your message was sent.");
       form.reset();
-    } catch {
+    } catch (err) {
       setStatus("error");
-      setMessage("Something went wrong. Please try again.");
+      setMessage(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again.",
+      );
     }
   }
 
