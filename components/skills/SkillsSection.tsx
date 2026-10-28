@@ -26,7 +26,6 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
         >
           SKILLS
         </h2>
-        <p className="mt-1 text-sm text-zinc-500">(hint: hover a key)</p>
       </div>
 
       <div
@@ -66,7 +65,7 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
                 animate={{ opacity: 1 }}
                 className="text-sm text-zinc-600"
               >
-                Hover a key to see the skill name and your level.
+                Hover a key to see the skill name and level.
               </motion.p>
             )}
           </AnimatePresence>
