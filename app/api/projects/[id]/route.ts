@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { deleteProject, updateProject } from "@/lib/projectStore";
+import { revalidatePublicSite } from "@/lib/revalidateSite";
 import type { Project } from "@/lib/types";
 
 type Params = { params: Promise<{ id: string }> };
@@ -11,6 +12,7 @@ export async function PATCH(request: Request, { params }: Params) {
   if (!updated) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
+  revalidatePublicSite();
   return NextResponse.json(updated);
 }
 
@@ -20,5 +22,6 @@ export async function DELETE(_request: Request, { params }: Params) {
   if (!ok) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
+  revalidatePublicSite();
   return NextResponse.json({ ok: true });
 }

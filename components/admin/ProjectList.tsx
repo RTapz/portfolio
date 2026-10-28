@@ -1,10 +1,15 @@
 "use client";
 
 import type { Project } from "@/lib/types";
+import { sortProjects, stepProjectInList } from "@/lib/projectOrder";
+import { notifyProjectsChanged } from "@/lib/projectsSync";
+import { motion } from "framer-motion";
 import Image from "next/image";
+import { useMemo, useState } from "react";
 
 interface ProjectListProps {
   projects: Project[];
+  onProjectsChange: (projects: Project[]) => void;
   editingId: string | null;
   onEdit: (project: Project) => void;
   onAddNew: () => void;
@@ -14,12 +19,17 @@ interface ProjectListProps {
 
 export function ProjectList({
   projects,
+  onProjectsChange,
   editingId,
   onEdit,
   onAddNew,
   onRefresh,
   onToast,
 }: ProjectListProps) {
+  const [movingId, setMovingId] = useState<string | null>(null);
+
+  const sorted = useMemo(() => sortProjects(projects), [projects]);
+
   async function onDelete(project: Project) {
     if (
       !confirm(
@@ -34,6 +44,7 @@ export function ProjectList({
       return;
     }
     onToast("Project deleted.", "success");
+    notifyProjectsChanged();
     onRefresh();
   }
 
@@ -51,27 +62,38 @@ export function ProjectList({
       project.published ? "Project hidden from site." : "Project is now live.",
       "success",
     );
+    notifyProjectsChanged();
     onRefresh();
   }
 
-  const sorted = [...projects].sort((a, b) => {
-    if (a.order !== b.order) return a.order - b.order;
-    return a.id.localeCompare(b.id);
-  });
+  async function move(project: Project, direction: -1 | 1, currentIndex: number) {
+    const optimistic = stepProjectInList(projects, project.id, direction);
+    if (!optimistic) return;
 
-  async function move(project: Project, direction: -1 | 1) {
-    const newPosition = project.order + direction;
-    if (newPosition < 1 || newPosition > sorted.length) return;
-    const res = await fetch(`/api/projects/${project.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ order: newPosition }),
-    });
-    if (!res.ok) {
-      onToast("Could not reorder.", "error");
-      return;
+    const newPosition =
+      optimistic.find((p) => p.id === project.id)?.order ?? currentIndex + 1;
+
+    onProjectsChange(optimistic);
+    setMovingId(project.id);
+
+    try {
+      const res = await fetch(`/api/projects/${project.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ order: newPosition }),
+      });
+      if (!res.ok) {
+        onToast("Could not save order. Reverting.", "error");
+        onRefresh();
+        return;
+      }
+      notifyProjectsChanged();
+    } catch {
+      onToast("Could not save order. Reverting.", "error");
+      onRefresh();
+    } finally {
+      setMovingId(null);
     }
-    onRefresh();
   }
 
   return (
@@ -80,8 +102,10 @@ export function ProjectList({
         <div>
           <h2 className="text-lg font-semibold text-white">Your projects</h2>
           <p className="text-sm text-zinc-500">
-            {sorted.length} project{sorted.length === 1 ? "" : "s"}. Order matches
-            the public portfolio (1 = first).
+            {sorted.length} project{sorted.length === 1 ? "" : "s"}. Position{" "}
+            <strong className="font-medium text-zinc-400">#1</strong> is the
+            first card on your site (top-left in the row of 3). ↑ ↓ updates
+            order instantly.
           </p>
         </div>
         <button
@@ -105,15 +129,22 @@ export function ProjectList({
           </button>
         </div>
       ) : (
-        <ul className="grid gap-4 sm:grid-cols-2">
+        <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {sorted.map((p, index) => (
-            <li
+            <motion.li
               key={p.id}
-              className={`overflow-hidden rounded-2xl border bg-zinc-950 transition ${
+              layout
+              transition={{
+                type: "spring",
+                stiffness: 520,
+                damping: 38,
+                mass: 0.8,
+              }}
+              className={`overflow-hidden rounded-2xl border bg-zinc-950 transition-colors ${
                 editingId === p.id
                   ? "border-brand ring-1 ring-brand/50"
                   : "border-white/10"
-              }`}
+              } ${movingId === p.id ? "opacity-90" : ""}`}
             >
               <div className="relative aspect-video bg-zinc-900">
                 <Image
@@ -125,7 +156,7 @@ export function ProjectList({
                 <span
                   className="absolute left-3 top-3 rounded-full bg-black/70 px-2.5 py-0.5 text-xs font-semibold text-white backdrop-blur"
                 >
-                  #{p.order}
+                  #{index + 1}
                 </span>
                 <span
                   className={`absolute right-3 top-3 rounded-full px-2.5 py-0.5 text-xs font-medium ${
@@ -159,21 +190,21 @@ export function ProjectList({
                 <div className="flex flex-wrap gap-2 border-t border-white/5 pt-3">
                   <button
                     type="button"
-                    disabled={index === 0}
-                    onClick={() => move(p, -1)}
+                    disabled={index === 0 || movingId !== null}
+                    onClick={() => move(p, -1, index)}
                     className="rounded-lg border border-white/10 px-3 py-1.5 text-sm text-zinc-300 hover:border-white/20 disabled:opacity-30"
-                    title="Move earlier on portfolio"
+                    title="Move one position earlier (e.g. #4 → #3)"
                   >
-                    ↑
+                    ↑ Up
                   </button>
                   <button
                     type="button"
-                    disabled={index === sorted.length - 1}
-                    onClick={() => move(p, 1)}
+                    disabled={index === sorted.length - 1 || movingId !== null}
+                    onClick={() => move(p, 1, index)}
                     className="rounded-lg border border-white/10 px-3 py-1.5 text-sm text-zinc-300 hover:border-white/20 disabled:opacity-30"
-                    title="Move later on portfolio"
+                    title="Move one position later (e.g. #3 → #4)"
                   >
-                    ↓
+                    ↓ Down
                   </button>
                   <button
                     type="button"
@@ -198,7 +229,7 @@ export function ProjectList({
                   </button>
                 </div>
               </div>
-            </li>
+            </motion.li>
           ))}
         </ul>
       )}

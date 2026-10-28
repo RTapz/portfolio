@@ -165,6 +165,7 @@ export function AdminDashboard() {
 
           <ProjectList
             projects={projects}
+            onProjectsChange={setProjects}
             editingId={editing?.id ?? null}
             onEdit={openEditProject}
             onAddNew={openNewProject}

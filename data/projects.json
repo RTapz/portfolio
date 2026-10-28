@@ -38,7 +38,18 @@
     ],
     "thumbnailUrl": "/placeholder-project.svg",
     "published": true,
-    "order": 3
+    "order": 4
+  },
+  {
+    "title": "The Sharon Close Apartments",
+    "slug": "the-sharon-close-apartments",
+    "description": "Booking platform for apartments located at 1 Sharon Close",
+    "tags": [],
+    "thumbnailUrl": "/uploads/images/1793192365717-Screenshot2026-10-28125906.png",
+    "liveUrl": "https://thesharoncloseapartments.lovable.app",
+    "published": true,
+    "order": 3,
+    "id": "f49c21c2-365f-44b5-bb7b-d3f83ade9846"
   },
   {
     "id": "3",
@@ -52,6 +63,6 @@
     ],
     "thumbnailUrl": "/placeholder-project.svg",
     "published": true,
-    "order": 4
+    "order": 5
   }
 ]

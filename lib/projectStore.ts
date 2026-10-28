@@ -2,6 +2,12 @@ import { readFile, writeFile } from "fs/promises";
 import path from "path";
 import { put, list, del } from "@vercel/blob";
 import type { Project } from "./types";
+import {
+  compareProjects,
+  sortProjects,
+} from "./projectOrder";
+
+export { compareProjects, sortProjects } from "./projectOrder";
 
 const DATA_PATH = path.join(process.cwd(), "data", "projects.json");
 const BLOB_PATHNAME = "projects.json";
@@ -52,17 +58,6 @@ async function readAll(): Promise<Project[]> {
   return readFromFile();
 }
 
-/** Stable sort: order ascending, then id for ties. */
-export function compareProjects(a: Project, b: Project): number {
-  const orderDiff = a.order - b.order;
-  if (orderDiff !== 0) return orderDiff;
-  return a.id.localeCompare(b.id);
-}
-
-export function sortProjects(projects: Project[]): Project[] {
-  return [...projects].sort(compareProjects);
-}
-
 /** Assign contiguous positions 1…n without changing relative order. */
 function renumberProjects(projects: Project[]): Project[] {
   return sortProjects(projects).map((p, i) => ({ ...p, order: i + 1 }));
@@ -103,7 +98,7 @@ async function writeAll(projects: Project[]): Promise<void> {
 }
 
 export async function getPublishedProjects(): Promise<Project[]> {
-  const all = renumberProjects(await readAll());
+  const all = await getAllProjects();
   return all.filter((p) => p.published);
 }
 
@@ -137,13 +132,16 @@ export async function updateProject(
   const previous = all[index];
   const { order: desiredPosition, ...fields } = input;
 
-  // Apply content changes but keep the old order until we explicitly move.
   let list = all.map((p) =>
     p.id === id ? { ...previous, ...fields, id } : p,
   );
 
   if (typeof desiredPosition === "number") {
-    list = moveToPosition(list, id, Math.round(desiredPosition));
+    const position = Math.max(
+      1,
+      Math.min(Math.round(desiredPosition), list.length),
+    );
+    list = moveToPosition(list, id, position);
   } else {
     list = renumberProjects(list);
   }

@@ -2,6 +2,7 @@
 
 import { AdminField } from "@/components/admin/AdminField";
 import { slugify } from "@/lib/slugify";
+import { notifyProjectsChanged } from "@/lib/projectsSync";
 import type { Project } from "@/lib/types";
 import { useEffect, useId, useState } from "react";
 import { FileUploadField } from "./FileUploadField";
@@ -102,6 +103,7 @@ export function ProjectForm({
         body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error("Save failed");
+      notifyProjectsChanged();
       onToast(
         initial ? "Project updated." : "Project added to your portfolio.",
         "success",
@@ -233,7 +235,7 @@ export function ProjectForm({
         </label>
         <AdminField
           label="Position on portfolio"
-          hint="1 is first. Other projects shift when you change this."
+          hint="Matches the public grid: 1 = top-left, then left to right in rows of 3. Saving moves this project to that slot."
         >
           <select
             className="field max-w-[200px]"
