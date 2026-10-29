@@ -15,6 +15,7 @@ export function AdminDashboard() {
   const [siteContent, setSiteContent] = useState<SiteContent | null>(null);
   const [section, setSection] = useState<"site" | "projects">("site");
   const [loading, setLoading] = useState(true);
+  const [storageWarning, setStorageWarning] = useState<string | null>(null);
   const [toast, setToast] = useState<{
     message: string;
     tone: "success" | "error" | "info";
@@ -29,21 +30,33 @@ export function AdminDashboard() {
 
   const loadProjects = useCallback(async () => {
     const res = await fetch("/api/projects");
+    if (!res.ok) return;
     setProjects(await res.json());
   }, []);
 
   const loadContent = useCallback(async () => {
     const res = await fetch("/api/content");
+    if (!res.ok) return;
     setSiteContent(await res.json());
+  }, []);
+
+  const loadStorageStatus = useCallback(async () => {
+    const res = await fetch("/api/admin/storage");
+    if (!res.ok) return;
+    const data = (await res.json()) as {
+      message?: string | null;
+      canPersist?: boolean;
+    };
+    setStorageWarning(data.canPersist ? null : data.message ?? null);
   }, []);
 
   useEffect(() => {
     (async () => {
       setLoading(true);
-      await Promise.all([loadProjects(), loadContent()]);
+      await Promise.all([loadProjects(), loadContent(), loadStorageStatus()]);
       setLoading(false);
     })();
-  }, [loadProjects, loadContent]);
+  }, [loadProjects, loadContent, loadStorageStatus]);
 
   function focusProjectForm() {
     window.scrollTo(0, 0);
@@ -99,6 +112,16 @@ export function AdminDashboard() {
           </button>
         </div>
       </header>
+
+      {storageWarning && (
+        <div
+          role="alert"
+          className="rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100"
+        >
+          <p className="font-semibold text-amber-200">Saves will fail on this deployment</p>
+          <p className="mt-1 text-amber-100/90">{storageWarning}</p>
+        </div>
+      )}
 
       {toast && (
         <AdminToast

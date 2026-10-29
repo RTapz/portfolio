@@ -1,6 +1,13 @@
 import { mkdir, writeFile } from "fs/promises";
 import { NextResponse } from "next/server";
 import path from "path";
+import { put } from "@vercel/blob";
+import {
+  BLOB_SETUP_MESSAGE,
+  hasBlobStorage,
+  isVercelRuntime,
+  storageErrorResponse,
+} from "@/lib/persistStorage";
 import { getSession } from "@/lib/session";
 
 const ALLOWED: Record<string, string[]> = {
@@ -43,6 +50,26 @@ export async function POST(request: Request) {
     .slice(0, 40);
   const filename = `${Date.now()}-${safeBase || "file"}${ext}`;
   const publicPath = `/${subdir}/${filename}`;
+
+  if (isVercelRuntime() && !hasBlobStorage()) {
+    return NextResponse.json({ error: BLOB_SETUP_MESSAGE }, { status: 503 });
+  }
+
+  if (hasBlobStorage()) {
+    try {
+      const blobPath = `${subdir}/${filename}`;
+      const blob = await put(blobPath, file, {
+        access: "public",
+        addRandomSuffix: false,
+      });
+      return NextResponse.json({ url: blob.url });
+    } catch (error) {
+      console.error("[upload] blob failed", error);
+      const { status, body } = storageErrorResponse(error);
+      return NextResponse.json(body, { status });
+    }
+  }
+
   const diskPath = path.join(process.cwd(), "public", subdir, filename);
 
   await mkdir(path.dirname(diskPath), { recursive: true });

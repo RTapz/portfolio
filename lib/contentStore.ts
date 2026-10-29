@@ -2,6 +2,7 @@ import { readFile, writeFile } from "fs/promises";
 import path from "path";
 import { del, list, put } from "@vercel/blob";
 import { defaultSiteContent } from "@/lib/defaultSiteContent";
+import { assertCanPersistToDisk } from "@/lib/persistStorage";
 import type { SiteContent } from "@/lib/types";
 
 const DATA_PATH = path.join(process.cwd(), "data", "site-content.json");
@@ -58,6 +59,7 @@ export async function getSiteContent(): Promise<SiteContent> {
 }
 
 export async function saveSiteContent(content: SiteContent): Promise<void> {
+  assertCanPersistToDisk();
   if (useBlobStore()) {
     await writeToBlob(content);
     return;

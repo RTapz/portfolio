@@ -3,6 +3,7 @@
 import { AdminField } from "@/components/admin/AdminField";
 import { slugify } from "@/lib/slugify";
 import { notifyProjectsChanged } from "@/lib/projectsSync";
+import { readApiError } from "@/lib/adminApiError";
 import type { Project } from "@/lib/types";
 import { useEffect, useId, useState } from "react";
 import { FileUploadField } from "./FileUploadField";
@@ -102,15 +103,20 @@ export function ProjectForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      if (!res.ok) throw new Error("Save failed");
+      if (!res.ok) {
+        throw new Error(await readApiError(res));
+      }
       notifyProjectsChanged();
       onToast(
         initial ? "Project updated." : "Project added to your portfolio.",
         "success",
       );
       onSaved();
-    } catch {
-      onToast("Could not save. Try signing in again.", "error");
+    } catch (err) {
+      onToast(
+        err instanceof Error ? err.message : "Could not save. Try again.",
+        "error",
+      );
     } finally {
       setLoading(false);
     }

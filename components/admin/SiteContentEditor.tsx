@@ -10,6 +10,7 @@ import {
 } from "@/lib/serviceIcons";
 import { slugify } from "@/lib/slugify";
 import type { SiteContent, SkillItem } from "@/lib/types";
+import { readApiError } from "@/lib/adminApiError";
 import { useEffect, useMemo, useState } from "react";
 import { FileUploadField } from "./FileUploadField";
 
@@ -65,11 +66,16 @@ export function SiteContentEditor({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(content),
       });
-      if (!res.ok) throw new Error("Save failed");
+      if (!res.ok) {
+        throw new Error(await readApiError(res));
+      }
       onToast("Site content saved. Open Preview site to check.", "success");
       onSaved();
-    } catch {
-      onToast("Could not save. Try logging in again.", "error");
+    } catch (err) {
+      onToast(
+        err instanceof Error ? err.message : "Could not save. Try again.",
+        "error",
+      );
     } finally {
       setSaving(false);
     }

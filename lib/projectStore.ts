@@ -6,6 +6,7 @@ import {
   compareProjects,
   sortProjects,
 } from "./projectOrder";
+import { assertCanPersistToDisk } from "./persistStorage";
 
 export { compareProjects, sortProjects } from "./projectOrder";
 
@@ -89,6 +90,7 @@ function moveToPosition(
 }
 
 async function writeAll(projects: Project[]): Promise<void> {
+  assertCanPersistToDisk();
   const normalized = renumberProjects(projects);
   if (useBlobStore()) {
     await writeToBlob(normalized);

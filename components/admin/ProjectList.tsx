@@ -3,6 +3,7 @@
 import type { Project } from "@/lib/types";
 import { sortProjects, stepProjectInList } from "@/lib/projectOrder";
 import { notifyProjectsChanged } from "@/lib/projectsSync";
+import { readApiError } from "@/lib/adminApiError";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useMemo, useState } from "react";
@@ -83,7 +84,7 @@ export function ProjectList({
         body: JSON.stringify({ order: newPosition }),
       });
       if (!res.ok) {
-        onToast("Could not save order. Reverting.", "error");
+        onToast(await readApiError(res, "Could not save order. Reverting."), "error");
         onRefresh();
         return;
       }

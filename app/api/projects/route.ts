@@ -4,6 +4,7 @@ import {
   getAllProjects,
   getPublishedProjects,
 } from "@/lib/projectStore";
+import { storageErrorResponse } from "@/lib/persistStorage";
 import { revalidatePublicSite } from "@/lib/revalidateSite";
 import { getSession } from "@/lib/session";
 import type { Project } from "@/lib/types";
@@ -21,8 +22,14 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const body = (await request.json()) as Omit<Project, "id">;
-  const project = await createProject(body);
-  revalidatePublicSite();
-  return NextResponse.json(project, { status: 201 });
+  try {
+    const body = (await request.json()) as Omit<Project, "id">;
+    const project = await createProject(body);
+    revalidatePublicSite();
+    return NextResponse.json(project, { status: 201 });
+  } catch (error) {
+    const { status, body } = storageErrorResponse(error);
+    console.error("[projects] POST failed", error);
+    return NextResponse.json(body, { status });
+  }
 }

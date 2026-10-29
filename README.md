@@ -45,6 +45,8 @@ If your password contains `$`, wrap it in quotes in `.env.local`, e.g. `ADMIN_PA
 
 On Vercel, set `BLOB_READ_WRITE_TOKEN` so admin saves persist.
 
+**Required on Vercel for admin saves:** open your project → **Storage** → **Create Blob store** → connect it to this app. That adds `BLOB_READ_WRITE_TOKEN`. Also set `ADMIN_PASSWORD` and `SESSION_SECRET` (32+ characters) under **Settings → Environment Variables**, then redeploy. Without Blob, the live admin can load but every save fails because the server cannot write files.
+
 ## Customize content
 
 - **Skills keycaps:** [`content/skills.ts`](content/skills.ts) (keys, colors, descriptions, grid positions)
