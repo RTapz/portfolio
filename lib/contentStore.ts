@@ -1,6 +1,8 @@
 import { readFile, writeFile } from "fs/promises";
 import path from "path";
 import { del, list, put } from "@vercel/blob";
+import { blobPutOptions } from "@/lib/blobAccess";
+import { readJsonFromBlobPathname } from "@/lib/blobJson";
 import { defaultSiteContent } from "@/lib/defaultSiteContent";
 import { assertCanPersistToDisk, hasBlobStorage } from "@/lib/persistStorage";
 import type { SiteContent } from "@/lib/types";
@@ -27,11 +29,7 @@ async function readFromBlob(): Promise<SiteContent> {
   if (!blob) {
     return readFromFile();
   }
-  const res = await fetch(blob.url);
-  if (!res.ok) {
-    throw new Error("Failed to read site content from blob storage");
-  }
-  return (await res.json()) as SiteContent;
+  return readJsonFromBlobPathname<SiteContent>(blob.pathname);
 }
 
 async function writeToBlob(content: SiteContent): Promise<void> {
@@ -40,11 +38,11 @@ async function writeToBlob(content: SiteContent): Promise<void> {
   if (existing) {
     await del(existing.url);
   }
-  await put(BLOB_PATHNAME, JSON.stringify(content, null, 2), {
-    access: "public",
-    addRandomSuffix: false,
-    allowOverwrite: true,
-  });
+  await put(
+    BLOB_PATHNAME,
+    JSON.stringify(content, null, 2),
+    blobPutOptions(),
+  );
 }
 
 export async function getSiteContent(): Promise<SiteContent> {

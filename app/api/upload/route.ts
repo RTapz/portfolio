@@ -8,6 +8,7 @@ import {
   isVercelRuntime,
   storageErrorResponse,
 } from "@/lib/persistStorage";
+import { blobPutOptions, pickBlobPublicUrl } from "@/lib/blobAccess";
 import { getSession } from "@/lib/session";
 
 const ALLOWED: Record<string, string[]> = {
@@ -58,11 +59,10 @@ export async function POST(request: Request) {
   if (hasBlobStorage()) {
     try {
       const blobPath = `${subdir}/${filename}`;
-      const blob = await put(blobPath, file, {
-        access: "public",
-        addRandomSuffix: false,
+      const blob = await put(blobPath, file, blobPutOptions());
+      return NextResponse.json({
+        url: pickBlobPublicUrl(blobPath, blob.url),
       });
-      return NextResponse.json({ url: blob.url });
     } catch (error) {
       console.error("[upload] blob failed", error);
       const { status, body } = storageErrorResponse(error);

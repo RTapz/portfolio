@@ -1,6 +1,8 @@
 import { readFile, writeFile } from "fs/promises";
 import path from "path";
 import { put, list, del } from "@vercel/blob";
+import { blobPutOptions } from "./blobAccess";
+import { readJsonFromBlobPathname } from "./blobJson";
 import type { Project } from "./types";
 import {
   compareProjects,
@@ -28,11 +30,7 @@ async function readFromBlob(): Promise<Project[]> {
   if (!blob) {
     return readFromFile();
   }
-  const res = await fetch(blob.url);
-  if (!res.ok) {
-    throw new Error("Failed to read projects from blob storage");
-  }
-  return (await res.json()) as Project[];
+  return readJsonFromBlobPathname<Project[]>(blob.pathname);
 }
 
 async function writeToBlob(projects: Project[]): Promise<void> {
@@ -41,11 +39,11 @@ async function writeToBlob(projects: Project[]): Promise<void> {
   if (existing) {
     await del(existing.url);
   }
-  await put(BLOB_PATHNAME, JSON.stringify(projects, null, 2), {
-    access: "public",
-    addRandomSuffix: false,
-    allowOverwrite: true,
-  });
+  await put(
+    BLOB_PATHNAME,
+    JSON.stringify(projects, null, 2),
+    blobPutOptions(),
+  );
 }
 
 async function readAll(): Promise<Project[]> {
