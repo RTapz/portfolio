@@ -2,15 +2,11 @@ import { readFile, writeFile } from "fs/promises";
 import path from "path";
 import { del, list, put } from "@vercel/blob";
 import { defaultSiteContent } from "@/lib/defaultSiteContent";
-import { assertCanPersistToDisk } from "@/lib/persistStorage";
+import { assertCanPersistToDisk, hasBlobStorage } from "@/lib/persistStorage";
 import type { SiteContent } from "@/lib/types";
 
 const DATA_PATH = path.join(process.cwd(), "data", "site-content.json");
 const BLOB_PATHNAME = "site-content.json";
-
-function useBlobStore(): boolean {
-  return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
-}
 
 async function readFromFile(): Promise<SiteContent> {
   try {
@@ -52,7 +48,7 @@ async function writeToBlob(content: SiteContent): Promise<void> {
 }
 
 export async function getSiteContent(): Promise<SiteContent> {
-  if (useBlobStore()) {
+  if (hasBlobStorage()) {
     return readFromBlob();
   }
   return readFromFile();
@@ -60,7 +56,7 @@ export async function getSiteContent(): Promise<SiteContent> {
 
 export async function saveSiteContent(content: SiteContent): Promise<void> {
   assertCanPersistToDisk();
-  if (useBlobStore()) {
+  if (hasBlobStorage()) {
     await writeToBlob(content);
     return;
   }

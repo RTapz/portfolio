@@ -1,13 +1,16 @@
 /** Human-readable fix when admin saves fail on Vercel without Blob. */
 export const BLOB_SETUP_MESSAGE =
-  "Production saves need Vercel Blob: in the Vercel project, open Storage → create a Blob store → connect it to this app so BLOB_READ_WRITE_TOKEN is set, then redeploy.";
+  "Production saves need Vercel Blob: in the Vercel project, open Storage → create a Blob store → connect it to this app, then redeploy.";
 
 export function isVercelRuntime(): boolean {
   return Boolean(process.env.VERCEL);
 }
 
+/** Blob via read-write token (local) or store ID + OIDC on Vercel. */
 export function hasBlobStorage(): boolean {
-  return Boolean(process.env.BLOB_READ_WRITE_TOKEN?.trim());
+  if (process.env.BLOB_READ_WRITE_TOKEN?.trim()) return true;
+  if (isVercelRuntime() && process.env.BLOB_STORE_ID?.trim()) return true;
+  return false;
 }
 
 /** Throws before writing JSON on serverless when Blob is not configured. */

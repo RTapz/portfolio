@@ -6,16 +6,12 @@ import {
   compareProjects,
   sortProjects,
 } from "./projectOrder";
-import { assertCanPersistToDisk } from "./persistStorage";
+import { assertCanPersistToDisk, hasBlobStorage } from "./persistStorage";
 
 export { compareProjects, sortProjects } from "./projectOrder";
 
 const DATA_PATH = path.join(process.cwd(), "data", "projects.json");
 const BLOB_PATHNAME = "projects.json";
-
-function useBlobStore(): boolean {
-  return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
-}
 
 async function readFromFile(): Promise<Project[]> {
   const raw = await readFile(DATA_PATH, "utf-8");
@@ -53,7 +49,7 @@ async function writeToBlob(projects: Project[]): Promise<void> {
 }
 
 async function readAll(): Promise<Project[]> {
-  if (useBlobStore()) {
+  if (hasBlobStorage()) {
     return readFromBlob();
   }
   return readFromFile();
@@ -92,7 +88,7 @@ function moveToPosition(
 async function writeAll(projects: Project[]): Promise<void> {
   assertCanPersistToDisk();
   const normalized = renumberProjects(projects);
-  if (useBlobStore()) {
+  if (hasBlobStorage()) {
     await writeToBlob(normalized);
     return;
   }
