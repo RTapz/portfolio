@@ -5,6 +5,7 @@ import { getSkillIconSvg } from "@/lib/skillIcon";
 
 interface SkillKeyProps {
   skill: SkillItem;
+  sizeClass?: string;
   active: boolean;
   onEnter: () => void;
   onLeave: () => void;
@@ -18,7 +19,16 @@ function edgeColor(color: string) {
   return `color-mix(in srgb, ${color} 45%, black)`;
 }
 
-export function SkillKey({ skill, active, onEnter, onLeave }: SkillKeyProps) {
+const DEFAULT_SIZE =
+  "h-12 w-12 sm:h-14 sm:w-14 md:h-[3.5rem] md:w-[3.5rem] md:rounded-lg";
+
+export function SkillKey({
+  skill,
+  sizeClass = DEFAULT_SIZE,
+  active,
+  onEnter,
+  onLeave,
+}: SkillKeyProps) {
   const svg = skill.iconSlug ? getSkillIconSvg(skill.iconSlug) : null;
   const iconColor = lightFace(skill.color) ? "#111" : "#fff";
   const label = skill.shortLabel ?? skill.label.slice(0, 2).toUpperCase();
@@ -27,7 +37,7 @@ export function SkillKey({ skill, active, onEnter, onLeave }: SkillKeyProps) {
   return (
     <button
       type="button"
-      className={`skill-key relative h-12 w-12 shrink-0 rounded-md border border-white/20 border-b-0 transition-[transform,box-shadow] duration-100 ease-out sm:h-14 sm:w-14 md:h-[3.5rem] md:w-[3.5rem] md:rounded-lg ${
+      className={`skill-key relative shrink-0 rounded-md border border-white/20 border-b-0 transition-[transform,box-shadow] duration-100 ease-out ${sizeClass} ${
         active ? "translate-y-[3px]" : ""
       }`}
       style={{

@@ -4,6 +4,7 @@ import { del, list, put } from "@vercel/blob";
 import { blobPutOptions } from "@/lib/blobAccess";
 import { readJsonFromBlobPathname } from "@/lib/blobJson";
 import { defaultSiteContent } from "@/lib/defaultSiteContent";
+import { applySkillGrid } from "@/lib/skillsLayout";
 import { assertCanPersistToDisk, hasBlobStorage } from "@/lib/persistStorage";
 import type { SiteContent } from "@/lib/types";
 
@@ -45,18 +46,26 @@ async function writeToBlob(content: SiteContent): Promise<void> {
   );
 }
 
+function normalizeSiteContent(content: SiteContent): SiteContent {
+  return {
+    ...content,
+    skills: applySkillGrid(content.skills),
+  };
+}
+
 export async function getSiteContent(): Promise<SiteContent> {
   if (hasBlobStorage()) {
-    return readFromBlob();
+    return normalizeSiteContent(await readFromBlob());
   }
-  return readFromFile();
+  return normalizeSiteContent(await readFromFile());
 }
 
 export async function saveSiteContent(content: SiteContent): Promise<void> {
   assertCanPersistToDisk();
+  const normalized = normalizeSiteContent(content);
   if (hasBlobStorage()) {
-    await writeToBlob(content);
+    await writeToBlob(normalized);
     return;
   }
-  await writeToFile(content);
+  await writeToFile(normalized);
 }

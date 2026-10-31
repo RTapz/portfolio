@@ -1,14 +1,13 @@
 "use client";
 
 import type { SkillItem } from "@/lib/types";
+import { keyboardColumns, keycapSizeClass } from "@/lib/skillsLayout";
 import { SkillKey } from "./SkillKey";
 
-const COLS = 5;
-
-function chunkRows(skills: SkillItem[]) {
+function chunkRows(skills: SkillItem[], cols: number) {
   const rows: SkillItem[][] = [];
-  for (let i = 0; i < skills.length; i += COLS) {
-    rows.push(skills.slice(i, i + COLS));
+  for (let i = 0; i < skills.length; i += cols) {
+    rows.push(skills.slice(i, i + cols));
   }
   return rows;
 }
@@ -24,7 +23,9 @@ export function SkillsKeyboard({
   hoveredSkill,
   onSkillHover,
 }: SkillsKeyboardProps) {
-  const rows = chunkRows(skills);
+  const cols = keyboardColumns(skills.length);
+  const rows = chunkRows(skills, cols);
+  const sizeClass = keycapSizeClass(cols);
 
   return (
     <div className="keyboard-board py-2 sm:py-4">
@@ -38,6 +39,7 @@ export function SkillsKeyboard({
               <SkillKey
                 key={skill.id}
                 skill={skill}
+                sizeClass={sizeClass}
                 active={hoveredSkill?.id === skill.id}
                 onEnter={() => onSkillHover(skill)}
                 onLeave={() => onSkillHover(null)}

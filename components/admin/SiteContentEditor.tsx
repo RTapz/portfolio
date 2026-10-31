@@ -2,13 +2,15 @@
 
 import { SKILL_LEVEL_UNSET } from "@/content/skills";
 import { AdminField } from "@/components/admin/AdminField";
+import { AddSkillPanel } from "@/components/admin/AddSkillPanel";
+import { SkillIconField } from "@/components/admin/SkillIconField";
 import { ServiceIcon } from "@/components/ui/ServiceIcon";
 import {
   SERVICE_ICON_IDS,
   SERVICE_ICON_LABELS,
   isServiceIconId,
 } from "@/lib/serviceIcons";
-import { slugify } from "@/lib/slugify";
+import { applySkillGrid } from "@/lib/skillsLayout";
 import type { SiteContent, SkillItem } from "@/lib/types";
 import { readApiError } from "@/lib/adminApiError";
 import { useEffect, useMemo, useState } from "react";
@@ -25,7 +27,7 @@ const TAB_HELP: Record<string, string> = {
   about: "Longer bio and stat numbers under About.",
   services: "What you offer — title and blurb for each card.",
   skills:
-    "Skills from your CV keyboard. Set each level below. Only add skills you have put on your CV or agreed with your developer.",
+    "Interactive keyboard on your site. Add skills with icons and levels, drag order with Move up/down, then save.",
   testimonials: "Quotes from clients or colleagues.",
   contact: "Intro text above the contact form.",
 };
@@ -61,10 +63,14 @@ export function SiteContentEditor({
   async function save() {
     setSaving(true);
     try {
+      const payload = {
+        ...content,
+        skills: applySkillGrid(content.skills),
+      };
       const res = await fetch("/api/content", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(content),
+        body: JSON.stringify(payload),
       });
       if (!res.ok) {
         throw new Error(await readApiError(res));
@@ -90,10 +96,16 @@ export function SiteContentEditor({
     { id: "contact" as const, label: "Contact" },
   ];
 
+  function withSkills(skills: SkillItem[]) {
+    return applySkillGrid(skills);
+  }
+
   function updateSkill(index: number, patch: Partial<SkillItem>) {
     setContent((c) => ({
       ...c,
-      skills: c.skills.map((s, i) => (i === index ? { ...s, ...patch } : s)),
+      skills: withSkills(
+        c.skills.map((s, i) => (i === index ? { ...s, ...patch } : s)),
+      ),
     }));
   }
 
@@ -104,33 +116,16 @@ export function SiteContentEditor({
       const skills = [...c.skills];
       const [item] = skills.splice(index, 1);
       skills.splice(next, 0, item);
-      return { ...c, skills };
+      return { ...c, skills: withSkills(skills) };
     });
   }
 
-  function addSkill() {
-    const label = window.prompt(
-      "Skill name (only add if it is on your CV or you have approved it):",
-    );
-    if (!label?.trim()) return;
-    const trimmed = label.trim();
-    const id = slugify(trimmed) || `skill-${Date.now()}`;
-    const usedKeys = new Set(content.skills.map((s) => s.key.toLowerCase()));
-    let key = trimmed.charAt(0).toLowerCase();
-    if (usedKeys.has(key)) {
-      key = trimmed.slice(0, 2).toLowerCase();
-    }
-    const skill: SkillItem = {
-      id,
-      label: trimmed,
-      key,
-      color: "#1e40af",
-      level: SKILL_LEVEL_UNSET,
-      description: "",
-      grid: { row: 0, col: 0 },
-    };
-    setContent((c) => ({ ...c, skills: [...c.skills, skill] }));
-    onToast(`Added “${trimmed}”. Choose a level and save.`, "info");
+  function addSkill(skill: SkillItem) {
+    setContent((c) => ({
+      ...c,
+      skills: withSkills([...c.skills, skill]),
+    }));
+    onToast(`Added “${skill.label}”. Save to publish.`, "info");
   }
 
   function removeSkill(index: number) {
@@ -138,9 +133,14 @@ export function SiteContentEditor({
     if (!confirm(`Remove “${skill.label}” from the skills keyboard?`)) return;
     setContent((c) => ({
       ...c,
-      skills: c.skills.filter((_, i) => i !== index),
+      skills: withSkills(c.skills.filter((_, i) => i !== index)),
     }));
   }
+
+  const usedSkillKeys = useMemo(
+    () => new Set(content.skills.map((s) => s.key.toLowerCase())),
+    [content.skills],
+  );
 
   return (
     <div className="relative space-y-6 pb-24">
@@ -452,20 +452,12 @@ export function SiteContentEditor({
 
         {tab === "skills" && (
           <div className="mt-6 space-y-4">
-            <div className="rounded-xl border border-brand/30 bg-brand/5 px-4 py-3 text-sm text-zinc-300">
-              List matches your CV skills section. Pick{" "}
-              <strong className="font-medium text-white">Level</strong> for each
-              key, then save. French is already Intermediate per your CV.
+            <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-300">
+              {content.skills.length} skill
+              {content.skills.length === 1 ? "" : "s"} on the keyboard — layout
+              adjusts automatically when you add or remove keys.
             </div>
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={addSkill}
-                className="rounded-full border border-white/15 px-4 py-1.5 text-sm text-zinc-300 hover:border-white/30"
-              >
-                + Add skill
-              </button>
-            </div>
+            <AddSkillPanel usedKeys={usedSkillKeys} onAdd={addSkill} />
             <div className="max-h-[55vh] space-y-2 overflow-y-auto pr-1">
             {content.skills.map((skill, i) => (
               <details
@@ -554,6 +546,28 @@ export function SiteContentEditor({
                         }
                       />
                     </div>
+                  </AdminField>
+                  <div className="sm:col-span-2">
+                    <SkillIconField
+                      iconSlug={skill.iconSlug ?? ""}
+                      color={skill.color}
+                      onChange={(patch) => updateSkill(i, patch)}
+                    />
+                  </div>
+                  <AdminField
+                    label="Short label"
+                    hint="Letters on the key when there is no icon."
+                  >
+                    <input
+                      className="field max-w-[120px]"
+                      maxLength={4}
+                      value={skill.shortLabel ?? ""}
+                      onChange={(e) =>
+                        updateSkill(i, {
+                          shortLabel: e.target.value || undefined,
+                        })
+                      }
+                    />
                   </AdminField>
                   <div className="sm:col-span-2">
                     <AdminField label="Tooltip description">

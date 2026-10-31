@@ -165,6 +165,19 @@
       }
     },
     {
+      "id": "supabase",
+      "label": "Supabase",
+      "key": "b",
+      "color": "#3FCF8E",
+      "level": "Beginner",
+      "description": "Frameworks & data — backend",
+      "iconSlug": "supabase",
+      "grid": {
+        "row": 1,
+        "col": 2
+      }
+    },
+    {
       "id": "git",
       "label": "Git & GitHub",
       "key": "t",

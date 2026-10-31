@@ -89,6 +89,15 @@ const raw: Omit<Skill, "grid">[] = [
     iconSlug: "postgresql",
   },
   {
+    id: "supabase",
+    label: "Supabase",
+    key: "b",
+    color: "#3FCF8E",
+    level: SKILL_LEVEL_UNSET,
+    description: "Frameworks & data — backend",
+    iconSlug: "supabase",
+  },
+  {
     id: "git",
     label: "Git & GitHub",
     key: "t",
